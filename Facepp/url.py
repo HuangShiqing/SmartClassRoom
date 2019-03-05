@@ -88,7 +88,8 @@ def url_compare(filepath1, filepath2, face_rectangle1=None, face_rectangle2=None
     data.append('Content-Type: %s\r\n' % 'application/octet-stream')
     data.append(fr.read())
     fr.close()
-    data.append('--%s--' % boundary)
+
+    data.append('--%s' % boundary)
     data.append('Content-Disposition: form-data; name="%s"\r\n' % 'face_rectangle1')
     data.append('{},{},{},{}'.format(face_rectangle1['top'], face_rectangle1['left'], face_rectangle1['width'],
                                      face_rectangle1['height']))
@@ -96,7 +97,8 @@ def url_compare(filepath1, filepath2, face_rectangle1=None, face_rectangle2=None
     data.append('Content-Disposition: form-data; name="%s"\r\n' % 'face_rectangle2')
     data.append('{},{},{},{}'.format(face_rectangle2['top'], face_rectangle2['left'], face_rectangle2['width'],
                                      face_rectangle2['height']))
-    data.append('--%s\r\n' % boundary)
+
+    data.append('--%s--\r\n' % boundary)
 
     for i, d in enumerate(data):
         if isinstance(d, str):
