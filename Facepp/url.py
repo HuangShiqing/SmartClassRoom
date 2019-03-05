@@ -56,7 +56,8 @@ def url_detect(filepath):
         print(e.read().decode('utf-8'))
 
 
-def url_compare(filepath1, filepath2, face_token1=None, face_token2=None):
+def url_compare(filepath1, filepath2, face_rectangle1=None, face_rectangle2=None):
+    # "top，left，width，height"
     http_url = 'https://api-cn.faceplusplus.com/facepp/v3/compare'
     # 免费
     # key = "q77EK-wF9dqlqqZAJKWEml_qki2GNTS1"
@@ -76,26 +77,26 @@ def url_compare(filepath1, filepath2, face_token1=None, face_token2=None):
     data.append('Content-Disposition: form-data; name="%s"\r\n' % 'api_secret')
     data.append(secret)
     data.append('--%s' % boundary)
-    if face_token1 != None:
-        data.append('Content-Disposition: form-data; name="%s"\r\n' % 'face_token1')
-        data.append(face_token1)
-        data.append('--%s' % boundary)
-        data.append('Content-Disposition: form-data; name="%s"\r\n' % 'face_token2')
-        data.append(face_token1)
-        data.append('--%s' % boundary)
-    else:
-        fr = open(filepath1, 'rb')
-        data.append('Content-Disposition: form-data; name="%s"; filename=" "' % 'image_file1')
-        data.append('Content-Type: %s\r\n' % 'application/octet-stream')
-        data.append(fr.read())
-        fr.close()
-        data.append('--%s' % boundary)
-        fr = open(filepath2, 'rb')
-        data.append('Content-Disposition: form-data; name="%s"; filename=" "' % 'image_file2')
-        data.append('Content-Type: %s\r\n' % 'application/octet-stream')
-        data.append(fr.read())
-        fr.close()
-        data.append('--%s--\r\n' % boundary)
+    fr = open(filepath1, 'rb')
+    data.append('Content-Disposition: form-data; name="%s"; filename=" "' % 'image_file1')
+    data.append('Content-Type: %s\r\n' % 'application/octet-stream')
+    data.append(fr.read())
+    fr.close()
+    data.append('--%s' % boundary)
+    fr = open(filepath2, 'rb')
+    data.append('Content-Disposition: form-data; name="%s"; filename=" "' % 'image_file2')
+    data.append('Content-Type: %s\r\n' % 'application/octet-stream')
+    data.append(fr.read())
+    fr.close()
+    data.append('--%s--' % boundary)
+    data.append('Content-Disposition: form-data; name="%s"\r\n' % 'face_rectangle1')
+    data.append('{},{},{},{}'.format(face_rectangle1['top'], face_rectangle1['left'], face_rectangle1['width'],
+                                     face_rectangle1['height']))
+    data.append('--%s' % boundary)
+    data.append('Content-Disposition: form-data; name="%s"\r\n' % 'face_rectangle2')
+    data.append('{},{},{},{}'.format(face_rectangle2['top'], face_rectangle2['left'], face_rectangle2['width'],
+                                     face_rectangle2['height']))
+    data.append('--%s\r\n' % boundary)
 
     for i, d in enumerate(data):
         if isinstance(d, str):
@@ -121,10 +122,9 @@ def url_compare(filepath1, filepath2, face_token1=None, face_token2=None):
 
 
 if __name__ == '__main__':
-    # {"image_id": "9cfaRGDXY/39z7rqFiccMw==", "request_id": "1551685651,88575546-b3ac-4c1d-bb5a-cfc1c8160b2e", "time_used": 1362, "faces": [{"face_rectangle": {"width": 158, "top": 1616, "left": 1776, "height": 158}, "face_token": "792d9783dc6889ba53b9006c4386fbc0"}]}
     # url_detect('t4.jpg')
-    # t1 c35a0e984f8ddb7e8042de975ef495f9
-    # t2 1c038cb000067e5fa8eaa1e8209ff597
-    # ?2 53e4431701bfab9bb49c746669724c17
-    url_compare('t1.jpg', 't2.jpg', 'c35a0e984f8ddb7e8042de975ef495f9', 'c35a0e984f8ddb7e8042de975ef495f9')
+    face_rectangle1 = {"width": 181, "top": 155, "left": 94, "height": 181}
+    face_rectangle2 = {"width": 121, "top": 205, "left": 449, "height": 121}
+    # {"width": 145, "top": 137, "left": 166, "height": 145}
+    url_compare('t1.jpg', 't4.jpg', face_rectangle1, face_rectangle2)
     exit()
