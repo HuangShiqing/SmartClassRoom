@@ -9,7 +9,6 @@ def url_detect(filepath):
     http_url = 'https://api-cn.faceplusplus.com/facepp/v3/detect'
     key = "q77EK-wF9dqlqqZAJKWEml_qki2GNTS1"
     secret = "WhXup4yLMc8OQF99mQ90DlV7p-hfYe46"
-    filepath = "../img/" + filepath
     boundary = '----------%s' % hex(int(time.time() * 1000))
     data = []
     data.append('--%s' % boundary)
@@ -27,10 +26,9 @@ def url_detect(filepath):
     # data.append('--%s' % boundary)
     # data.append('Content-Disposition: form-data; name="%s"\r\n' % 'return_landmark')
     # data.append('1')
-    # data.append('--%s' % boundary)
-    # data.append('Content-Disposition: form-data; name="%s"\r\n' % 'return_attributes')
-    # data.append(
-    #     "gender,age,smiling,headpose,facequality,blur,eyestatus,emotion,ethnicity,beauty,mouthstatus,eyegaze,skinstatus")
+    data.append('--%s' % boundary)
+    data.append('Content-Disposition: form-data; name="%s"\r\n' % 'return_attributes')
+    data.append("headpose,facequality,eyegaze")
     data.append('--%s--\r\n' % boundary)
 
     for i, d in enumerate(data):
@@ -66,8 +64,6 @@ def url_compare(filepath1, filepath2, face_rectangle1=None, face_rectangle2=None
     key = 'lMA4mtztEo3rqCA1IKDBYPhX_w3fWvY4'
     secret = 'c8xugTC1ECKYM1K_FPjPWeNZuqEJZUFU'
 
-    filepath1 = "../img/" + filepath1
-    filepath2 = "../img/" + filepath2
     boundary = '----------%s' % hex(int(time.time() * 1000))
     data = []
     data.append('--%s' % boundary)
@@ -266,7 +262,6 @@ def url_search(filepath, outer_id):
     # 收费
     # key = 'lMA4mtztEo3rqCA1IKDBYPhX_w3fWvY4'
     # secret = 'c8xugTC1ECKYM1K_FPjPWeNZuqEJZUFU'
-    filepath = "../img/" + filepath
     boundary = '----------%s' % hex(int(time.time() * 1000))
     data = []
     data.append('--%s' % boundary)
@@ -311,15 +306,18 @@ def url_search(filepath, outer_id):
 
 
 if __name__ == '__main__':
-    # url_detect('t1.jpg')
+    # pitch_angle越大，低头越严重，大于10就认为是低头
+    # facequality越大那么脸越清晰，越能证明抬头（不太准）
+    # vector_z_component越大越认真，大于0.9就认为是向上
+    url_detect('../img/model/j/jbad7.jpg')
 
     # face_rectangle1 = {"width": 181, "top": 155, "left": 94, "height": 181}
     # face_rectangle2 = {"width": 121, "top": 205, "left": 449, "height": 121}
-    # url_compare('t1.jpg', 't4.jpg', face_rectangle1, face_rectangle2)
+    # url_compare('../img/t1.jpg', '../img/t4.jpg', face_rectangle1, face_rectangle2)
 
     # url_faceset_create(outer_id='faceset_test')
-    url_faceset_getdetail(outer_id='faceset_test')
+    # url_faceset_getdetail(outer_id='faceset_test')
     # url_faceset_add(outer_id='faceset_test',
     #                 face_tokens='32f4b716dccb632139d33e3b0fbe99a9,2476e3a308dafd3ac987cc237836e9b7')  # 佟丽娅、吴京的face_token
-    url_search('t2.jpg', outer_id='faceset_test')
+    # url_search('../img/t2.jpg', outer_id='faceset_test')
     exit()
