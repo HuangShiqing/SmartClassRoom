@@ -7,8 +7,8 @@
 #include "VixHZ_export.h"
 #include <time.h>
 
-#include "XMLConfigure.h"
-#include "typedef.h"
+//#include "XMLConfigure.h"
+//#include "typedef.h"
 
 #pragma comment(lib, "iNetSDK.lib")
 
@@ -72,27 +72,27 @@ int _tmain(int argc, _TCHAR* argv[])
 	//long lHandle = _VixHz_StartRealPlay(m_login_id, 0, 5, NULL, RealDataCBFunc, NULL);
 
 	//添加预置点
-	string strinfo = "";
-	unsigned char nPointNum = 0;
-	VG_PRESET_INFO poinfinfo = { 0 };
-	poinfinfo.ucPresetID = nPointNum;
-	itoa(nPointNum, poinfinfo.szPresetName, 10);//必须设置名称
-	CXMLConfigure::Instance()->PacketXMLInside(CFG_ADDPRESET_CFG, strinfo, &poinfinfo, -1);
-	Vix_PtzCfgParam para = { 0 };
-	base::string info;
-	info = strinfo.c_str();
-	_VixHz_SendPtzCtrl(m_login_id, 0, CFG_ADDPRESET_CFG, para, info,1);
+	//string strinfo = "";
+	//unsigned char nPointNum = 0;
+	//VG_PRESET_INFO poinfinfo = { 0 };
+	//poinfinfo.ucPresetID = nPointNum;
+	//itoa(nPointNum, poinfinfo.szPresetName, 10);//必须设置名称
+	//CXMLConfigure::Instance()->PacketXMLInside(CFG_ADDPRESET_CFG, strinfo, &poinfinfo, -1);
+	//Vix_PtzCfgParam para = { 0 };
+	//base::string info;
+	//info = strinfo.c_str();
+	//_VixHz_SendPtzCtrl(m_login_id, 0, CFG_ADDPRESET_CFG, para, info,1);
 
 	//云台转到预置点
-	//unsigned char nPointNum = 0;
-	//long mChannelNum = 0;
-	//long lConfigType = VIXHZ_PTZ_GoPrepoint;
-	//Vix_PtzCfgParam para = { 0 };
-	//para.lParam1 = 4;
-	//para.lParam2 = nPointNum;
-	//base::string strInfoPtz;
-	//long lParam1 = 0;//区分是控制命令还是配置，1-配置
-	//_VixHz_SendPtzCtrl(m_login_id, mChannelNum, lConfigType, para, strInfoPtz);
+	unsigned char nPointNum = 2;
+	long mChannelNum = 0;
+	long lConfigType = VIXHZ_PTZ_GoPrepoint;
+	Vix_PtzCfgParam para = { 0 };
+	para.lParam1 = 4;
+	para.lParam2 = nPointNum;
+	base::string strInfoPtz;
+	long lParam1 = 0;//区分是控制命令还是配置，1-配置
+	_VixHz_SendPtzCtrl(m_login_id, mChannelNum, lConfigType, para, strInfoPtz);
 
 	getchar();
 	return 0;
