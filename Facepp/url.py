@@ -49,10 +49,10 @@ def url_detect(filepath):
         qrcont = resp.read()
         # if you want to load as json, you should decode first,
         # for example: json.loads(qrount.decode('utf-8'))
-        print(qrcont.decode('utf-8'))
+        # print(qrcont.decode('utf-8'))
         data = eval(qrcont.decode('utf-8'))
-        with open('data.json', 'w') as json_file:
-            json_file.write(json.dumps(data))
+        # with open('data.json', 'w') as json_file:
+        #     json_file.write(json.dumps(data))
         return data
     except urllib.error.HTTPError as e:
         print(e.read().decode('utf-8'))
@@ -359,14 +359,14 @@ def url_search(filepath, face_token, outer_id):
         print(e.read().decode('utf-8'))
 
 
-def url_search_all(file_path):
+def url_search_all(file_path, outer_id):
     json = url_detect(file_path)
     faces = json['faces']
     result = list()
     for face in faces:
-        json = url_search(face_token=face['face_token'], filepath=None, outer_id='faceset_test')
+        json = url_search(face_token=face['face_token'], filepath=None, outer_id=outer_id)
         result.append(json['results'][0])
-        exit()
+    return result, faces
 
 
 def show_jpg(path, json, point):
@@ -663,7 +663,7 @@ def show_jpg(path, json, point):
         r122_y = 560
         cv2.rectangle(jpg, (r121_x, r121_y), (r122_x, r122_y), color=(0, 255, 0), thickness=5)
 
-    for index, face in enumerate(json['faces']):
+    for index, face in enumerate(json):
         rectangle = face['face_rectangle']
         cv2.rectangle(jpg, (rectangle['left'], rectangle['top']),
                       (rectangle['left'] + rectangle['width'], rectangle['top'] + rectangle['height']), (0, 0, 255),
@@ -680,7 +680,7 @@ def show_jpg(path, json, point):
     cv2.imwrite('2.jpg', jpg)
 
 
-def rollcall(json, point):
+def rollcall(json, search_result, point):
     inf_set = dict()
     # if point == 1:
     #     y_line = 421
@@ -693,7 +693,7 @@ def rollcall(json, point):
     #     y2_line = 700
     #     x_line = 950
 
-    for index, face in enumerate(json['faces']):
+    for index, face in enumerate(json):
         rectangle = face['face_rectangle']
         center_x = rectangle['left'] + rectangle['width'] / 2
         center_y = rectangle['top'] + rectangle['height'] / 2
@@ -703,7 +703,7 @@ def rollcall(json, point):
             r12_x = 613
             r12_y = 1013
             if judge_in_out(center_x, center_y, r11_x, r11_y, r12_x, r12_y):
-                inf_set.update({'1': json['results'][index]['face_token']})
+                inf_set.update({'1': search_result[index]['face_token']})
                 break
 
             r21_x = 759
@@ -711,7 +711,7 @@ def rollcall(json, point):
             r22_x = 1431
             r22_y = 1075
             if judge_in_out(center_x, center_y, r21_x, r21_y, r22_x, r22_y):
-                inf_set.update({'2': json['results'][index]['face_token']})
+                inf_set.update({'2': search_result[index]['face_token']})
                 break
 
             r31_x = 1072
@@ -719,7 +719,7 @@ def rollcall(json, point):
             r32_x = 1630
             r32_y = 471
             if judge_in_out(center_x, center_y, r31_x, r31_y, r32_x, r32_y):
-                inf_set.update({'3': json['results'][index]['face_token']})
+                inf_set.update({'3': search_result[index]['face_token']})
                 break
 
             r41_x = 323
@@ -727,7 +727,7 @@ def rollcall(json, point):
             r42_x = 869
             r42_y = 437
             if judge_in_out(center_x, center_y, r41_x, r41_y, r42_x, r42_y):
-                inf_set.update({'4': json['results'][index]['face_token']})
+                inf_set.update({'4': search_result[index]['face_token']})
                 break  #
             # if center_y > y_line:
             #     if center_x < x_line:
@@ -749,7 +749,7 @@ def rollcall(json, point):
             r12_x = 1012
             r12_y = 1080
             if judge_in_out(center_x, center_y, r11_x, r11_y, r12_x, r12_y):
-                inf_set.update({'5': json['results'][index]['face_token']})
+                inf_set.update({'5': search_result[index]['face_token']})
                 break
 
             r21_x = 1288
@@ -757,7 +757,7 @@ def rollcall(json, point):
             r22_x = 1920
             r22_y = 1042
             if judge_in_out(center_x, center_y, r21_x, r21_y, r22_x, r22_y):
-                inf_set.update({'6': json['results'][index]['face_token']})
+                inf_set.update({'6': search_result[index]['face_token']})
                 break
 
             r31_x = 1127
@@ -765,7 +765,7 @@ def rollcall(json, point):
             r32_x = 1679
             r32_y = 457
             if judge_in_out(center_x, center_y, r31_x, r31_y, r32_x, r32_y):
-                inf_set.update({'7': json['results'][index]['face_token']})
+                inf_set.update({'7': search_result[index]['face_token']})
                 break
 
             r41_x = 263
@@ -773,7 +773,7 @@ def rollcall(json, point):
             r42_x = 833
             r42_y = 565
             if judge_in_out(center_x, center_y, r41_x, r41_y, r42_x, r42_y):
-                inf_set.update({'8': json['results'][index]['face_token']})
+                inf_set.update({'8': search_result[index]['face_token']})
                 break  #
             # if center_y > y_line:
             #     if center_x < x_line:
@@ -795,7 +795,7 @@ def rollcall(json, point):
             r12_x = 1681
             r12_y = 1044
             if judge_in_out(center_x, center_y, r11_x, r11_y, r12_x, r12_y):
-                inf_set.update({'9': json['results'][index]['face_token']})
+                inf_set.update({'9': search_result[index]['face_token']})
                 break
 
             r21_x = 216
@@ -803,7 +803,7 @@ def rollcall(json, point):
             r22_x = 692
             r22_y = 1080
             if judge_in_out(center_x, center_y, r21_x, r21_y, r22_x, r22_y):
-                inf_set.update({'10': json['results'][index]['face_token']})
+                inf_set.update({'10': search_result[index]['face_token']})
                 break
 
             r31_x = 1185
@@ -811,7 +811,7 @@ def rollcall(json, point):
             r32_x = 1583
             r32_y = 622
             if judge_in_out(center_x, center_y, r31_x, r31_y, r32_x, r32_y):
-                inf_set.update({'11': json['results'][index]['face_token']})
+                inf_set.update({'11': search_result[index]['face_token']})
                 break
 
             r41_x = 385
@@ -819,7 +819,7 @@ def rollcall(json, point):
             r42_x = 787
             r42_y = 704
             if judge_in_out(center_x, center_y, r41_x, r41_y, r42_x, r42_y):
-                inf_set.update({'12': json['results'][index]['face_token']})
+                inf_set.update({'12': search_result[index]['face_token']})
                 break  #
 
             r51_x = 1141
@@ -827,7 +827,7 @@ def rollcall(json, point):
             r52_x = 1489
             r52_y = 330
             if judge_in_out(center_x, center_y, r51_x, r51_y, r52_x, r52_y):
-                inf_set.update({'13': json['results'][index]['face_token']})
+                inf_set.update({'13': search_result[index]['face_token']})
                 break  #
 
             r61_x = 419
@@ -835,7 +835,7 @@ def rollcall(json, point):
             r62_x = 761
             r62_y = 355
             if judge_in_out(center_x, center_y, r61_x, r61_y, r62_x, r62_y):
-                inf_set.update({'14': json['results'][index]['face_token']})
+                inf_set.update({'14': search_result[index]['face_token']})
                 break
             # if center_y < y1_line:
             #     if center_x < x_line:
@@ -864,7 +864,7 @@ def rollcall(json, point):
             r12_x = 1599
             r12_y = 1063
             if judge_in_out(center_x, center_y, r11_x, r11_y, r12_x, r12_y):
-                inf_set.update({'15': json['results'][index]['face_token']})
+                inf_set.update({'15': search_result[index]['face_token']})
                 break
 
             r21_x = 0
@@ -872,7 +872,7 @@ def rollcall(json, point):
             r22_x = 427
             r22_y = 1068
             if judge_in_out(center_x, center_y, r21_x, r21_y, r22_x, r22_y):
-                inf_set.update({'16': json['results'][index]['face_token']})
+                inf_set.update({'16': search_result[index]['face_token']})
                 break
 
             r31_x = 1290
@@ -880,7 +880,7 @@ def rollcall(json, point):
             r32_x = 1692
             r32_y = 631
             if judge_in_out(center_x, center_y, r31_x, r31_y, r32_x, r32_y):
-                inf_set.update({'17': json['results'][index]['face_token']})
+                inf_set.update({'17': search_result[index]['face_token']})
                 break
 
             r41_x = 508
@@ -888,7 +888,7 @@ def rollcall(json, point):
             r42_x = 884
             r42_y = 616
             if judge_in_out(center_x, center_y, r41_x, r41_y, r42_x, r42_y):
-                inf_set.update({'18': json['results'][index]['face_token']})
+                inf_set.update({'18': search_result[index]['face_token']})
                 break  #
 
             r51_x = 1545
@@ -896,7 +896,7 @@ def rollcall(json, point):
             r52_x = 1891
             r52_y = 302
             if judge_in_out(center_x, center_y, r51_x, r51_y, r52_x, r52_y):
-                inf_set.update({'19': json['results'][index]['face_token']})
+                inf_set.update({'19': search_result[index]['face_token']})
                 break  #
 
             r61_x = 758
@@ -904,7 +904,7 @@ def rollcall(json, point):
             r62_x = 1092
             r62_y = 331
             if judge_in_out(center_x, center_y, r61_x, r61_y, r62_x, r62_y):
-                inf_set.update({'20': json['results'][index]['face_token']})
+                inf_set.update({'20': search_result[index]['face_token']})
                 break
             # if center_y < y1_line:
             #     if center_x < x_line:
@@ -934,14 +934,14 @@ def rollcall(json, point):
             r12_x = 1078
             r12_y = 715
             if judge_in_out(center_x, center_y, r11_x, r11_y, r12_x, r12_y):
-                inf_set.update({'21': json['results'][index]['face_token']})
+                inf_set.update({'21': search_result[index]['face_token']})
                 break
             r21_x = 343
             r21_y = 291
             r22_x = 670
             r22_y = 618
             if judge_in_out(center_x, center_y, r21_x, r21_y, r22_x, r22_y):
-                inf_set.update({'22': json['results'][index]['face_token']})
+                inf_set.update({'22': search_result[index]['face_token']})
                 break
 
             r31_x = 91
@@ -949,7 +949,7 @@ def rollcall(json, point):
             r32_x = 382
             r32_y = 520
             if judge_in_out(center_x, center_y, r31_x, r31_y, r32_x, r32_y):
-                inf_set.update({'23': json['results'][index]['face_token']})
+                inf_set.update({'23': search_result[index]['face_token']})
                 break
             #
             r41_x = 1172
@@ -957,21 +957,21 @@ def rollcall(json, point):
             r42_x = 1484
             r42_y = 466
             if judge_in_out(center_x, center_y, r41_x, r41_y, r42_x, r42_y):
-                inf_set.update({'24': json['results'][index]['face_token']})
+                inf_set.update({'24': search_result[index]['face_token']})
                 break  #
             r51_x = 823
             r51_y = 111
             r52_x = 1105
             r52_y = 393
             if judge_in_out(center_x, center_y, r51_x, r51_y, r52_x, r52_y):
-                inf_set.update({'25': json['results'][index]['face_token']})
+                inf_set.update({'25': search_result[index]['face_token']})
                 break  #
             r61_x = 529
             r61_y = 68
             r62_x = 784
             r62_y = 323
             if judge_in_out(center_x, center_y, r61_x, r61_y, r62_x, r62_y):
-                inf_set.update({'26': json['results'][index]['face_token']})
+                inf_set.update({'26': search_result[index]['face_token']})
                 break
         elif point == 6:
             r11_x = 1042
@@ -979,84 +979,84 @@ def rollcall(json, point):
             r12_x = 1254
             r12_y = 948
             if judge_in_out(center_x, center_y, r11_x, r11_y, r12_x, r12_y):
-                inf_set.update({'27': json['results'][index]['face_token']})
+                inf_set.update({'27': search_result[index]['face_token']})
                 break
             r21_x = 550
             r21_y = 733
             r22_x = 748
             r22_y = 931
             if judge_in_out(center_x, center_y, r21_x, r21_y, r22_x, r22_y):
-                inf_set.update({'28': json['results'][index]['face_token']})
+                inf_set.update({'28': search_result[index]['face_token']})
                 break
             r31_x = 187
             r31_y = 729
             r32_x = 385
             r32_y = 927
             if judge_in_out(center_x, center_y, r31_x, r31_y, r32_x, r32_y):
-                inf_set.update({'29': json['results'][index]['face_token']})
+                inf_set.update({'29': search_result[index]['face_token']})
                 break
             r41_x = 1282
             r41_y = 627
             r42_x = 1508
             r42_y = 853
             if judge_in_out(center_x, center_y, r41_x, r41_y, r42_x, r42_y):
-                inf_set.update({'30': json['results'][index]['face_token']})
+                inf_set.update({'30': search_result[index]['face_token']})
                 break  #
             r51_x = 933
             r51_y = 573
             r52_x = 1109
             r52_y = 749
             if judge_in_out(center_x, center_y, r51_x, r51_y, r52_x, r52_y):
-                inf_set.update({'31': json['results'][index]['face_token']})
+                inf_set.update({'31': search_result[index]['face_token']})
                 break  #
             r61_x = 515
             r61_y = 596
             r62_x = 685
             r62_y = 766
             if judge_in_out(center_x, center_y, r61_x, r61_y, r62_x, r62_y):
-                inf_set.update({'32': json['results'][index]['face_token']})
+                inf_set.update({'32': search_result[index]['face_token']})
                 break
             r71_x = 1485
             r71_y = 490
             r72_x = 1651
             r72_y = 656
             if judge_in_out(center_x, center_y, r71_x, r71_y, r72_x, r72_y):
-                inf_set.update({'33': json['results'][index]['face_token']})
+                inf_set.update({'33': search_result[index]['face_token']})
                 break
             r81_x = 1100
             r81_y = 500
             r82_x = 1260
             r82_y = 660
             if judge_in_out(center_x, center_y, r81_x, r81_y, r82_x, r82_y):
-                inf_set.update({'34': json['results'][index]['face_token']})
+                inf_set.update({'34': search_result[index]['face_token']})
                 break
             r91_x = 806
             r91_y = 484
             r92_x = 962
             r92_y = 640
             if judge_in_out(center_x, center_y, r91_x, r91_y, r92_x, r92_y):
-                inf_set.update({'35': json['results'][index]['face_token']})
+                inf_set.update({'35': search_result[index]['face_token']})
                 break
             r101_x = 1656
             r101_y = 396
             r102_x = 1810
             r102_y = 550
             if judge_in_out(center_x, center_y, r101_x, r101_y, r102_x, r102_y):
-                inf_set.update({'36': json['results'][index]['face_token']})
+                inf_set.update({'36': search_result[index]['face_token']})
                 break
             r111_x = 1359
             r111_y = 393
             r112_x = 1501
             r112_y = 535
             if judge_in_out(center_x, center_y, r111_x, r111_y, r112_x, r112_y):
-                inf_set.update({'37': json['results'][index]['face_token']})
+                inf_set.update({'37': search_result[index]['face_token']})
                 break
             r121_x = 984
             r121_y = 418
             r122_x = 1126
             r122_y = 560
             if judge_in_out(center_x, center_y, r121_x, r121_y, r122_x, r122_y):
-                inf_set.update({'38': json['results'][index]['face_token']})
+                inf_set.update({'38': search_result[index]['face_token']})
                 break
     return inf_set
 
@@ -1113,11 +1113,11 @@ if __name__ == '__main__':
     # url_faceset_add(outer_id='faceset_test',
     #                 face_tokens='32f4b716dccb632139d33e3b0fbe99a9,2476e3a308dafd3ac987cc237836e9b7')  # 佟丽娅、吴京的face_token
     # json = url_search(face_token='770dd86936eb7f0335305a4c5a7985d6', filepath=None, outer_id='faceset_test')
-    json = url_search_all('../img/t3.jpg')
-    infor = None
-    path = '../img/point6/1552719892.jpg'
-    json = url_search(path, outer_id='faceset_classmate')
-    show_jpg(path, json, point=6)
-    infor = rollcall(json, point=6)
+
+    # infor = None
+    path = '../img/point5/1552719282.jpg'
+    search_result, faces = url_search_all(path, outer_id='faceset_classmate')
+    show_jpg(path, faces, point=5)
+    infor = rollcall(faces, search_result, point=5)
     # print_box(json, 12)
     exit()
