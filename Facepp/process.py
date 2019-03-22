@@ -1,4 +1,6 @@
 import cv2
+import requests
+import json
 
 
 def show_jpg(path, json, point):
@@ -1071,6 +1073,25 @@ def judge_good_bad(face):
             return 1  # 低头
         else:
             return 2  # 抬头听课
+
+
+def send_result(data):
+    url = "http://192.168.1.106:8987/"
+    # data = {'a': 123, 'b': 456}
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url=url, headers=headers, data=json.dumps(data))
+    print(response.text)
+
+
+def send_img(data):
+    url = "http://192.168.1.106:8987/"
+    # data = './1.jpg'
+    newname = data.split('/')
+    print(newname[len(newname) - 1])
+    files = {'file': (newname[len(newname) - 1], open(data, 'rb'), 'image/jpg')}
+    r = requests.post(url, files=files)
+    result = r.text
+    print(result)
 
 
 def print_box(json, num):
